@@ -62,17 +62,20 @@ def main(save):
 
     model = doc2vec_model(train_corpus)
     org_vecs = []
+    org_names = []
 
     client = MongoClient('localhost', 27017)
     db = client['organizations']
     posts = db.posts
 
     for doc in posts.find():
+        org_names.append(str(doc['_id']))
         doc = doc['about'].strip().split()
         org_vecs.append(model.infer_vector(doc))
 
-    doc_df = pd.DataFrame(org_vecs)
-    doc_df.to_csv(doc_df)
+    doc_df = pd.DataFrame([org_vecs, org_names])
+    print doc_df.shape
+    doc_df.to_csv("org.csv")
 
     if save == 1:
 
