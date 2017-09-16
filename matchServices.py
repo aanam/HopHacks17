@@ -4,8 +4,8 @@ import collections
 import smart_open
 import random
 from pymongo import MongoClient
-
-
+import pandas as pd
+import numpy as np
 
 def read_corpus(fname, tokens_only=False):
     with smart_open.smart_open(fname, encoding="iso-8859-1") as f:
@@ -71,7 +71,11 @@ def main(save):
         doc = doc['about'].strip().split()
         org_vecs.append(model.infer_vector(doc))
 
+    doc_df = pd.DataFrame(org_vecs)
+    doc_df.to_csv(doc_df)
+
     if save == 1:
+
         with open('Data/' + 'training_data.txt', 'w+') as train_file:
             for doc_id in range(len(train_corpus)):
                 train_file.write('Document ({}): {}\n'.format(doc_id, ' '.join(train_corpus[doc_id].words)))
