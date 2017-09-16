@@ -3,7 +3,7 @@ import os
 import collections
 import smart_open
 import random
-
+from pymongo import MongoClient
 
 
 
@@ -62,19 +62,27 @@ def main(save):
 
     model = doc2vec_model(train_corpus)
     org_vecs = []
-    with open(in_data) as our_file:
-        for doc in our_file:
-            org_vecs.append(model.infer_vector([doc.strip().split(" ")]))
+
+    client = MongoClient('localhost', 27017)
+    db = client['organizations']
+    posts = db.posts
+
+    for doc in posts.find():
+        doc = doc['about'].strip().split()
+        org_vecs.append(model.infer_vector(doc))
 
     if save == 1:
-        with open('/Users/amritaanam/Documents/GIT_Repo/HopHacks17/Data/' + 'training_data.txt', 'w+') as train_file:
+        with open('Data/' + 'training_data.txt', 'w+') as train_file:
             for doc_id in range(len(train_corpus)):
                 train_file.write('Document ({}): {}\n'.format(doc_id, ' '.join(train_corpus[doc_id].words)))
 
 
-        with open('/Users/amritaanam/Documents/GIT_Repo/HopHacks17/Data/' + 'test_data.txt', 'w+') as test_file:
+        with open('Data/' + 'test_data.txt', 'w+') as test_file:
             for doc_id in range(len(test_corpus)):
                 test_file.write('Document ({}): {}\n'.format(doc_id, ' '.join(test_corpus[doc_id])))
 
-in_data = 'some_path'
+
+
 main(save=0)
+
+

@@ -6,3 +6,5 @@ posts = db.posts
 
 for post in posts.find():
     print post['name']
+    print post['type']
+    print post['about']
