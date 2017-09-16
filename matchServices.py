@@ -6,6 +6,7 @@ import random
 from pymongo import MongoClient
 import pandas as pd
 import numpy as np
+from scipy import spatial
 
 def read_corpus(fname, tokens_only=False):
     with smart_open.smart_open(fname, encoding="iso-8859-1") as f:
@@ -16,42 +17,25 @@ def read_corpus(fname, tokens_only=False):
                 # For training data, add tags
                 yield gensim.models.doc2vec.TaggedDocument(gensim.utils.simple_preprocess(line), [i])
 
+
 def doc2vec_model(train_corpus):
     model = gensim.models.doc2vec.Doc2Vec(size=50, min_count=2, iter=100)
     model.build_vocab(train_corpus)
-    return  model
-
-def doc2vec_vectors(dataset, model):
-    for doc_id in range(len(dataset)):
-        inferred_vector = model.infer_vector(dataset[doc_id].words)
+    return model
 
 
+def doc_similarity(q, doc_df):
+    doc = doc_df.values
 
-ranks = []
-second_ranks = []
-'''
-with open('/Users/amritaanam/Documents/GIT_Repo/HopHacks17/Data/' + 'training_data.txt', 'w+') as train_file:
-    for doc_id in range(len(train_corpus)):
-        #train_file.write('Document ({}): {}\n'.format(doc_id, ' '.join(train_corpus[doc_id].words)))
-        inferred_vector = model.infer_vector(train_corpus[doc_id].words)
-        sims = model.docvecs.most_similar([inferred_vector], topn=len(model.docvecs))
-        rank = [docid for docid, sim in sims].index(doc_id)
-        ranks.append(rank)
-
-    second_ranks.append(sims[1])
-
-collections.Counter(ranks)  # Results vary due to random seeding and very small corpus
-print('Document ({}): {}\n'.format(doc_id, ' '.join(train_corpus[doc_id].words)))
-print(u'SIMILAR/DISSIMILAR DOCS PER MODEL %s:\n' % model)
-for label, index in [('MOST', 0), ('MEDIAN', len(sims)//2), ('LEAST', len(sims) - 1)]:
-    print(u'%s %s: %s\n' % (label, sims[index], ' '.join(train_corpus[sims[index][0]].words)))
-'''
+    sim = []
+    for row in doc:
+        sim.append(1 - spatial.distance.cosine(q, row))
+    sim_rank = pd.DataFrame(sim, index=doc_df.index.tolist(), columns = ['similarity'])
+    sim_rank = sim_rank.sort_values(by='similarity', ascending=False)
+    return sim_rank[0:3]
 
 
-
-
-def main(save):
-
+def main(query, save):
     # Set file names for train and test data
     test_data_dir = '{}'.format(os.sep).join([gensim.__path__[0], 'test', 'test_data'])
     lee_train_file = test_data_dir + os.sep + 'lee_background.cor'
@@ -69,27 +53,25 @@ def main(save):
     posts = db.posts
 
     for doc in posts.find():
-        org_names.append(str(doc['_id']))
+        org_names.append(str(doc['name']))
         doc = doc['about'].strip().split()
         org_vecs.append(model.infer_vector(doc))
 
-    doc_df = pd.DataFrame([org_vecs, org_names])
-    print doc_df.shape
-    doc_df.to_csv("org.csv")
+    doc_df = pd.DataFrame(org_vecs, index = org_names)
+    doc_df = doc_df.drop_duplicates()
+    q_vec = model.infer_vector(query.strip().split())
+
+    top_3 = doc_similarity(q_vec, doc_df)
 
     if save == 1:
-
+        doc_df.to_csv("org.csv")
         with open('Data/' + 'training_data.txt', 'w+') as train_file:
             for doc_id in range(len(train_corpus)):
                 train_file.write('Document ({}): {}\n'.format(doc_id, ' '.join(train_corpus[doc_id].words)))
-
 
         with open('Data/' + 'test_data.txt', 'w+') as test_file:
             for doc_id in range(len(test_corpus)):
                 test_file.write('Document ({}): {}\n'.format(doc_id, ' '.join(test_corpus[doc_id])))
 
-
-
-main(save=0)
-
-
+query = "I have been affected by hurricane"
+main( query, save=0)
