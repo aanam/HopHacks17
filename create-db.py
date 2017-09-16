@@ -20,3 +20,16 @@ posts.insert_one(post)
 
 post = {"name": "American Jewish Joint Distribution Committee", "address": "132 East 43rd Street, New York, NY 10017", "phone": "212-687-6200", "type": "cyclone", "about": "JDC is collecting funds to assist the cyclone victims on a nonsectarian basis. JDC is now in contact with leaders from the local Jewish Community in Yangon and with other disaster relief partners in the region to determine an appropriate emergency response, one that reaches those who are not being served by others."}
 posts.insert_one(post)
+
+
+post = {"name": "AmeriCares", "address": "88 Hamilton Avenue, Stamford, CT 06902", "phone": "800-486-4357", "type": "cyclone", "about": "AmeriCares has relief workers on the ground in Myanmar coordinating our relief efforts. Our emergency response includes over 15 tons of essential medicines and medical supplies valued at more than $1 million ready to leave our warehouse in Amsterdam. We are also looking into alternate delivery methods in order to send our aid as quickly as possible. AmeriCares aid includes emergency medicines and medical supplies essential for relief efforts after a disaster, including: antibiotics, analgesics, latex gloves, oral rehydration salts, multivitamins, anti-malarials, medications used to treat diarrheal diseases and dengue fever, as well as water purification sachets to produce potable water in the flooded region. To donate financial or in-kind resources, please contact AmeriCares at  1-800-486-4357 or visit us at www.americares.org."}
+posts.insert_one(post)
+
+
+post = {"name": "Operation USA", "address": "3617 Hayden Avenue, Suite A, Culver City, CA 90232", "phone": "800-678-7255", "type": "cyclone", "about": "Operation USA has a team on the Thailand-Myanmar border awaiting entry visas and is partnering with IOs and NGOs active inside Myanmar. OpUSA has worked for 15 years with Burmese refugees in the border areas and is purchasing relief supplies locally as well as preparing medical shipments from its U.S. warehouse"}
+posts.insert_one(post)
+
+
+post = {"name": "United Methodist Committee on Relief", "address": "132 East 43rd Street, New York, NY 10017", "phone": "212-687-6200", "type": "cyclone", "about": "UMCOR is responding to the Myanmar cyclone by working through Action by Churches Together, a worldwide coalition of faith-based aid agencies. The response addresses needs such as water, food, and shelter. UMCOR continues to explore other partnerships to respond to this disaster."}
+posts.insert_one(post)
+
