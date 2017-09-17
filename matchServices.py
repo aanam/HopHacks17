@@ -62,6 +62,7 @@ def main(query, save):
     q_vec = model.infer_vector(query.strip().split())
 
     top_3 = doc_similarity(q_vec, doc_df)
+    print(doc_df.where(doc_df.index.tolist() == top_3.index.tolist()))
 
     if save == 1:
         doc_df.to_csv("org.csv")
