@@ -53,7 +53,6 @@ def main(query, save):
     posts = db.posts
     web = []
     for doc in posts.find():
-        print doc.keys()
         org_names.append(str(doc['name']))
         web.append(doc['weblink'])
         doc = doc['about'].strip().split()
