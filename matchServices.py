@@ -51,18 +51,23 @@ def main(query, save):
     client = MongoClient('localhost', 27017)
     db = client['organizations']
     posts = db.posts
-
+    web = []
     for doc in posts.find():
+        print doc.keys()
         org_names.append(str(doc['name']))
+        web.append(doc['weblink'])
         doc = doc['about'].strip().split()
         org_vecs.append(model.infer_vector(doc))
 
     doc_df = pd.DataFrame(org_vecs, index = org_names)
+    web_df = pd.DataFrame(web, index=org_names)
     doc_df = doc_df.drop_duplicates()
+    web_df = web_df.drop_duplicates()
     q_vec = model.infer_vector(query.strip().split())
 
     top_3 = doc_similarity(q_vec, doc_df)
-    print(doc_df.where(doc_df.index.tolist() == top_3.index.tolist()))
+    for i in range(3):
+        print(web_df.query('index == @top_3.index.tolist()'))
 
     if save == 1:
         doc_df.to_csv("org.csv")
